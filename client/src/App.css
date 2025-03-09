@@ -479,3 +479,49 @@ body {
     left: auto;
   }
 }
+
+
+
+/* Todo Notes Styles */
+.todo-notes-container {
+  width: 100%;
+  margin-top: 1rem;
+  border-top: 1px solid var(--medium-gray);
+}
+
+.todo-notes-toggle {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0;
+  background: none;
+  border: none;
+  font-size: 0.85rem;
+  color: var(--secondary-color);
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.todo-notes-toggle:hover {
+  color: var(--primary-color);
+}
+
+.todo-notes-content {
+  padding: 0.5rem 0;
+}
+
+.todo-notes-list {
+  list-style-type: none;
+  padding-left: 0;
+}
+
+.todo-note-item {
+  padding: 0.5rem;
+  font-size: 0.85rem;
+  border-bottom: 1px dashed var(--medium-gray);
+}
+
+.todo-note-item:last-child {
+  border-bottom: none;
+}

@@ -1,57 +1,83 @@
-
-import { useState } from 'react';
-import { FaFileExport, FaChevronDown } from 'react-icons/fa';
-import placeholderAvatar from '../../assets/placeholder-avatar.png';
+import { useState, useRef, useEffect } from "react";
+import { FaFileExport, FaChevronDown } from "react-icons/fa";
+import { useUser } from "../../contexts/userContext";
+import placeholderAvatar from "../../assets/placeholder-avatar.png";
+import styles from "./Navbar.module.css";
 
 const Navbar = () => {
-  const [currentUser, setCurrentUser] = useState('Current User');
+  const { users, currentUser, switchUser } = useUser();
   const [showDropdown, setShowDropdown] = useState(false);
-  
-  const users = [
-    { username: 'john_doe', displayName: 'John Doe' },
-    { username: 'jane_smith', displayName: 'Jane Smith' },
-    { username: 'bob_brown', displayName: 'Bob Brown' },
-  ];
+  const dropdownRef = useRef(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowDropdown(false);
+      }
+    };
+
+    if (showDropdown) {
+      document.addEventListener("click", handleClickOutside);
+    }
+
+    return () => document.removeEventListener("click", handleClickOutside);
+  }, [showDropdown]);
+
+  const handleUserSwitch = (username) => {
+    switchUser(username);
+    setShowDropdown(false);
+  };
 
   return (
-    <header className="app-header">
-      <h1>Todo List</h1>
-      <div className="user-controls">
-        <button className="btn btn-secondary">
+    <header className={styles.navbar}>
+      <h1 className={styles.title}>Todo List</h1>
+
+      <div className={styles.controls}>
+        <button className={styles.exportBtn}>
           <FaFileExport /> Export
         </button>
 
-        <div className="user-switcher">
-          <button 
-            className="user-switcher-btn"
-            onClick={() => setShowDropdown(!showDropdown)}
+        {/* user switcher */}
+        <div className={styles.userSwitcher} ref={dropdownRef}>
+          <button
+            className={styles.userSwitcherBtn}
+            onClick={() => setShowDropdown((prev) => !prev)}
           >
-            <span className="current-username">{currentUser}</span>
+            <span>{currentUser?.username || "Select User"}</span>
             <FaChevronDown />
           </button>
-          
+
           {showDropdown && (
-            <div className="user-dropdown">
-              {users.map(user => (
-                <div 
-                  key={user.username}
-                  className="user-dropdown-item"
-                  onClick={() => {
-                    setCurrentUser(user.displayName);
-                    setShowDropdown(false);
-                  }}
+            <div className={styles.dropdown}>
+              {users.map((user) => (
+                <div
+                  key={user._id}
+                  className={styles.dropdownItem}
+                  onClick={() => handleUserSwitch(user.username)}
                 >
-                  <img src={placeholderAvatar} alt={user.displayName} className="avatar-small" />
-                  <span>{user.displayName}</span>
+                  <img
+                    src={user.avatar || placeholderAvatar}
+                    alt={user.username}
+                    className={styles.avatarSmall}
+                  />
+                  <span>{user.username}</span>
                 </div>
               ))}
             </div>
           )}
         </div>
 
-        <div className="user-profile">
-          <span className="username">{currentUser}</span>
-          <img src={placeholderAvatar} alt="User avatar" className="avatar" />
+        {/* user profile */}
+        <div className={styles.profile}>
+          <span className={styles.username}>
+            {currentUser?.username || "Guest"}
+          </span>
+          <img
+            src={currentUser?.avatar || placeholderAvatar}
+            alt="User avatar"
+            className={styles.avatar}
+          />
         </div>
       </div>
     </header>

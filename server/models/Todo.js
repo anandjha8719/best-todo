@@ -23,15 +23,8 @@ const todoSchema = new mongoose.Schema({
   ],
   notes: [
     {
-      content: {
-        type: String,
-        required: true,
-        trim: true,
-      },
-      createdAt: {
-        type: Date,
-        default: Date.now,
-      },
+      type: String,
+      trim: true,
     },
   ],
   mentionedUsers: [

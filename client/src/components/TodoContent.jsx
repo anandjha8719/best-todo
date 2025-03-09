@@ -1,32 +1,46 @@
 import {
   FaPlus,
   FaSearch,
-  FaStickyNote,
   FaEdit,
   FaTrash,
+  FaStickyNote,
   FaChevronLeft,
   FaChevronRight,
 } from "react-icons/fa";
 import { useState } from "react";
 import AddTodoModal from "./AddTodoModal";
+import TodoNotes from "./TodoNotes";
+import { useTodo } from "../contexts/todoContext";
 
 const TodoContent = () => {
-  const [showModal, setShowModal] = useState(false);
+  const { todos: data, deleteTodo, updateFilters, filters } = useTodo();
 
-  const sampleTodo = {
-    id: 1,
-    title: "Complete the todo app assignment",
-    priority: "high",
-    tags: ["work", "coding"],
-    users: ["@john_doe"],
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedTodo, setSelectedTodo] = useState(null);
+  const handleAddNewClick = () => {
+    setSelectedTodo(null); // Reset selected todo when adding a new one
+    setIsModalOpen(true);
+  };
+
+  const handleEditClick = (todo) => {
+    setSelectedTodo(todo);
+    setIsModalOpen(true);
+  };
+
+  const handleDeleteClick = (id) => {
+    if (window.confirm("Are you sure you want to delete this todo?")) {
+      deleteTodo(id);
+    }
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
   };
 
   return (
     <section className="todo-content">
-      <AddTodoModal show={showModal} onClose={() => setShowModal(false)} />
-
       <div className="todo-actions">
-        <button className="btn btn-primary" onClick={() => setShowModal(true)}>
+        <button className="btn btn-primary" onClick={handleAddNewClick}>
           <FaPlus /> Add Todo
         </button>
 
@@ -35,56 +49,55 @@ const TodoContent = () => {
             type="text"
             placeholder="Search todos..."
             className="search-input"
+            value={filters.search}
+            onChange={(e) => updateFilters({ search: e.target.value })}
           />
-          <button className="search-btn">
-            <FaSearch />
-          </button>
+
+          <FaSearch />
         </div>
       </div>
-
 
       <div className="todo-list">
-        <div className="todo-item">
-          <div className="todo-checkbox">
-            <input type="checkbox" id="todo-1" />
-            <label htmlFor="todo-1" />
-          </div>
-          <div className="todo-content">
-            <h3 className="todo-title">{sampleTodo.title}</h3>
-            <div className="todo-meta">
-              <span className={`todo-priority priority-${sampleTodo.priority}`}>
-                {sampleTodo.priority}
-              </span>
-              <div className="todo-tags">
-                {sampleTodo.tags.map((tag) => (
-                  <span key={tag} className="tag">
-                    {tag}
-                  </span>
-                ))}
+        {data.map((item, index) => {
+          return (
+            <div className="todo-item" key={index}>
+              <div className="todo-checkbox">
+                <input type="checkbox" id="todo-1" />
+                <label htmlFor="todo-1" />
               </div>
-              <div className="todo-users">
-                {sampleTodo.users.map((user) => (
-                  <span key={user} className="user-tag">
-                    {user}
+              <div className="todo-content">
+                <h3 className="todo-title">{item.title}</h3>
+                <div className="todo-meta">
+                  <span className={`todo-priority priority-${item.priority}`}>
+                    {item.priority}
                   </span>
-                ))}
+                  <div className="todo-tags">
+                    {item.tags.map((tag) => (
+                      <span key={tag} className="tag">
+                        {tag}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="todo-users">
+                    {item.mentionedUsers.map((user) => (
+                      <span key={user._id} className="user-tag">
+                        {user.username}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+                <TodoNotes notes={item.notes} />
+              </div>
+
+              <div className="todo-actions">
+                <FaStickyNote />
+                <FaEdit onClick={() => handleEditClick(item)} />
+                <FaTrash onClick={() => handleDeleteClick(item._id)} />
               </div>
             </div>
-          </div>
-          <div className="todo-actions">
-            <button className="todo-note-btn">
-              <FaStickyNote />
-            </button>
-            <button className="todo-edit-btn">
-              <FaEdit />
-            </button>
-            <button className="todo-delete-btn">
-              <FaTrash />
-            </button>
-          </div>
-        </div>
+          );
+        })}
       </div>
-        
 
       <div className="pagination-controls">
         <button className="pagination-prev" disabled>
@@ -95,9 +108,10 @@ const TodoContent = () => {
           <span className="pagination-total">10</span>
         </div>
         <button className="pagination-next">
-          Next <FaChevronRight/>
+          Next <FaChevronRight />
         </button>
-      </div> 
+      </div>
+      {isModalOpen && <AddTodoModal todo={selectedTodo} onClose={closeModal} />}
     </section>
   );
 };
