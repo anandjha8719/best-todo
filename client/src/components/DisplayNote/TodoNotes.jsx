@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { FaChevronDown, FaChevronUp } from "react-icons/fa";
+import styles from "./TodoNotes.module.css";
 
 const TodoNotes = ({ notes }) => {
   const [expanded, setExpanded] = useState(false);
@@ -9,20 +10,17 @@ const TodoNotes = ({ notes }) => {
   }
 
   return (
-    <div className="todo-notes-container">
-      <button
-        className="todo-notes-toggle"
-        onClick={() => setExpanded(!expanded)}
-      >
+    <div className={styles.container}>
+      <button className={styles.toggle} onClick={() => setExpanded(!expanded)}>
         <span>Notes ({notes.length})</span>
         {expanded ? <FaChevronUp /> : <FaChevronDown />}
       </button>
 
       {expanded && (
-        <div className="todo-notes-content">
-          <ul className="todo-notes-list">
+        <div className={styles.content}>
+          <ul className={styles.list}>
             {notes.map((note, index) => (
-              <li key={index} className="todo-note-item">
+              <li key={index} className={styles.item}>
                 {note}
               </li>
             ))}

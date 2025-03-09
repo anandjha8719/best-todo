@@ -107,6 +107,7 @@ export const TodoProvider = ({ children }) => {
 
     try {
       // Add user to the request
+      console.log("todo before add:", todos);
       const newTodo = await createTodo({
         ...todoData,
         user: currentUser.username,
@@ -184,10 +185,7 @@ export const TodoProvider = ({ children }) => {
         { content: noteContent },
         currentUser.username
       );
-
-      setTodos((prevTodos) =>
-        prevTodos.map((todo) => (todo._id === todoId ? updatedTodo : todo))
-      );
+      loadTodos();
       return updatedTodo;
     } catch (err) {
       setError("Failed to add note. Please try again.");

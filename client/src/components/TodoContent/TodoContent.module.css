@@ -1,0 +1,319 @@
+/* TodoContent.module.css */
+:root {
+  --primary-color: #4a6eb5;
+  --primary-light: #6688cc;
+  --primary-dark: #334d80;
+  --secondary-color: #6c757d;
+  --light-gray: #f8f9fa;
+  --medium-gray: #e9ecef;
+  --dark-gray: #343a40;
+  --danger-color: #dc3545;
+  --success-color: #28a745;
+  --warning-color: #ffc107;
+  --border-radius: 4px;
+  --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  --transition: all 0.3s ease;
+}
+
+.todoContent {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+/* Todo Actions */
+.todoActions {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.addButton {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+  transition: var(--transition);
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.addButton:hover {
+  background-color: var(--primary-dark);
+}
+
+.searchContainer {
+  display: flex;
+  width: 50%;
+  align-items: center;
+  position: relative;
+}
+
+.searchInput {
+  flex: 1;
+  padding: 0.5rem;
+  padding-right: 2.5rem;
+  border: 1px solid var(--medium-gray);
+  border-radius: var(--border-radius);
+  outline: none;
+  width: 100%;
+}
+
+.searchIcon {
+  position: absolute;
+  right: 0.75rem;
+  color: var(--secondary-color);
+}
+
+/* Todo List */
+.todoList {
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.noTodos {
+  padding: 2rem;
+  text-align: center;
+  color: var(--secondary-color);
+}
+
+.todoItem {
+  padding: 1rem;
+  border-bottom: 1px solid var(--medium-gray);
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.todoItem:hover {
+  background-color: var(--light-gray);
+}
+
+.todoCompleted {
+  background-color: rgba(40, 167, 69, 0.05);
+}
+
+.todoCompleted .todoTitle {
+  text-decoration: line-through;
+  color: var(--secondary-color);
+}
+
+.todoItemHeader {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  margin-bottom: 0.5rem;
+}
+
+.todoCheckboxContainer {
+  display: flex;
+  align-items: center;
+  margin-right: 1rem;
+}
+
+.todoCheckbox {
+  display: none;
+}
+
+.todoCheckboxLabel {
+  display: block;
+  width: 22px;
+  height: 22px;
+  border: 2px solid var(--primary-color);
+  border-radius: 4px;
+  position: relative;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.todoCheckbox:checked + .todoCheckboxLabel:after {
+  content: "\2713";
+  color: var(--primary-color);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.todoCheckbox:disabled + .todoCheckboxLabel {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.todoTitle {
+  flex: 1;
+  margin: 0;
+  font-size: 1.1rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.todoActionButtons {
+  display: flex;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.actionButton {
+  background: none;
+  border: none;
+  color: var(--secondary-color);
+  cursor: pointer;
+  /* width: 30px;
+  height: 30px; */
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: var(--transition);
+}
+
+.actionButton:hover {
+  background-color: var(--medium-gray);
+}
+
+.noteButton:hover {
+  color: var(--primary-color);
+}
+
+.editButton:hover {
+  color: var(--warning-color);
+}
+
+.deleteButton:hover {
+  color: var(--danger-color);
+}
+
+.todoMeta {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.85rem;
+  padding-left: 2.5rem;
+  width: 100%;
+}
+
+.todoPriority {
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  font-weight: 500;
+}
+
+.priorityHigh {
+  background-color: rgba(220, 53, 69, 0.1);
+  color: var(--danger-color);
+}
+
+.priorityMedium {
+  background-color: rgba(255, 193, 7, 0.1);
+  color: var(--warning-color);
+}
+
+.priorityLow {
+  background-color: rgba(40, 167, 69, 0.1);
+  color: var(--success-color);
+}
+
+.todoTags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.tag {
+  background-color: var(--primary-light);
+  color: white;
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.todoUsers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.userTag {
+  background-color: var(--light-gray);
+  color: var(--dark-gray);
+  padding: 0.2rem 0.5rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+/* Pagination */
+.paginationControls {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: white;
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+.paginationButton {
+  background: none;
+  border: none;
+  color: var(--primary-color);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  border-radius: var(--border-radius);
+  transition: var(--transition);
+}
+
+.paginationButton:hover:not(:disabled) {
+  background-color: var(--light-gray);
+}
+
+.paginationButton:disabled {
+  color: var(--secondary-color);
+  cursor: not-allowed;
+}
+
+.paginationPages {
+  font-weight: 500;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+  .todoActions {
+    flex-direction: column;
+    gap: 1rem;
+    align-items: stretch;
+  }
+
+  .searchContainer {
+    width: 100%;
+  }
+
+  .todoItemHeader {
+    flex-wrap: wrap;
+  }
+
+  .todoActionButtons {
+    margin-left: 0;
+    margin-top: 0.5rem;
+  }
+
+  .todoMeta {
+    flex-direction: column;
+    align-items: flex-start;
+    padding-left: 0;
+  }
+}

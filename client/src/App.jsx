@@ -1,7 +1,7 @@
 // src/App.jsx
 import Navbar from "./components/Navbar/Navbar";
-import Sidebar from "./components/Sidebar";
-import TodoContent from "./components/TodoContent";
+import Sidebar from "./components/Sidebar/Sidebar";
+import TodoContent from "./components/TodoContent/TodoContent";
 import "./App.css";
 import { UserProvider } from "./contexts/userContext";
 import { TodoProvider } from "./contexts/todoContext";

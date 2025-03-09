@@ -1,0 +1,81 @@
+/* TodoNoteAdd.module.css */
+.noteAddContainer {
+    background-color: #f8f9fa;
+    border-radius: 4px;
+    padding: 1rem;
+    margin-top: 0.5rem;
+    border: 1px solid #e9ecef;
+  }
+  
+  .noteAddHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+  }
+  
+  .noteAddHeader h4 {
+    margin: 0;
+    color: #4a6eb5;
+    font-size: 1rem;
+  }
+  
+  .closeButton {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #6c757d;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+  }
+  
+  .closeButton:hover {
+    color: #dc3545;
+  }
+  
+  .noteInput {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #e9ecef;
+    border-radius: 4px;
+    resize: vertical;
+    margin-bottom: 0.5rem;
+    font-family: inherit;
+  }
+  
+  .noteInput:focus {
+    outline: none;
+    border-color: #4a6eb5;
+  }
+  
+  .addNoteButton {
+    padding: 0.5rem 1rem;
+    background-color: #4a6eb5;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: all 0.3s ease;
+  }
+  
+  .addNoteButton:hover:not(:disabled) {
+    background-color: #334d80;
+  }
+  
+  .addNoteButton:disabled {
+    background-color: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+  }
+  
+  /* Responsive design */
+  @media (max-width: 768px) {
+    .noteAddContainer {
+      padding: 0.75rem;
+    }
+  }

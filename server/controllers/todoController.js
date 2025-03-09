@@ -265,7 +265,7 @@ const addNoteToTodo = async (req, res) => {
       });
     }
 
-    todo.notes.push({ content });
+    todo.notes.push(content);
     todo.updatedAt = Date.now();
 
     const updatedTodo = await todo.save();

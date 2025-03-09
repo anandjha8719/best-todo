@@ -21,6 +21,10 @@
   max-height: 90vh;
   overflow-y: auto;
   animation: slideUp 0.3s ease-out;
+  scrollbar-width: none; /* Firefox */
+}
+.modal::-webkit-scrollbar {
+  display: none; /* Chrome, Safari */
 }
 
 .modalHeader {

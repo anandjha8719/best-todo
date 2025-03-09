@@ -39,7 +39,7 @@ export const fetchTodoById = async (id, username) => {
 export const createTodo = async (todoData) => {
   try {
     const response = await apiClient.post(`/todos?user=${todoData.user}`, todoData);
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error("Error creating todo:", error);
     throw error;
@@ -53,7 +53,7 @@ export const updateTodoById = async (id, todoData, username) => {
       `/todos/${id}?user=${username}`,
       todoData
     );
-    return response.data;
+    return response.data.data;
   } catch (error) {
     console.error(`Error updating todo ${id}:`, error);
     throw error;

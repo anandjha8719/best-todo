@@ -1,19 +1,19 @@
 import React, { useState, useEffect } from "react";
 import styles from "./TodoModal.module.css";
-import { useTodo } from "../contexts/todoContext";
-import { useUser } from "../contexts/userContext";
+import { useTodo } from "../../contexts/todoContext";
+import { useUser } from "../../contexts/userContext";
 
 const AddTodoModal = ({ todo = null, onClose }) => {
   const { addTodo, updateTodo } = useTodo();
   const { users } = useUser();
-  
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     priority: "Medium",
     tags: "",
     mentionedUsernames: [],
-    status: "pending"
+    status: "pending",
   });
 
   // If a todo is provided, populate the form for editing
@@ -24,52 +24,54 @@ const AddTodoModal = ({ todo = null, onClose }) => {
         description: todo.description || "",
         priority: todo.priority || "Medium",
         tags: todo.tags ? todo.tags.join(", ") : "",
-        mentionedUsernames: todo.mentionedUsers ? todo.mentionedUsers.map(user => user.username) : [],
-        status: todo.status || "pending"
+        mentionedUsernames: todo.mentionedUsers
+          ? todo.mentionedUsers.map((user) => user.username)
+          : [],
+        status: todo.status || "pending",
       });
     }
   }, [todo]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
   const handleUserSelection = (username) => {
-    setFormData(prev => {
+    setFormData((prev) => {
       const isSelected = prev.mentionedUsernames.includes(username);
       let newUsers;
-      
+
       if (isSelected) {
-        newUsers = prev.mentionedUsernames.filter(u => u !== username);
+        newUsers = prev.mentionedUsernames.filter((u) => u !== username);
       } else {
         newUsers = [...prev.mentionedUsernames, username];
       }
-      
+
       return { ...prev, mentionedUsernames: newUsers };
     });
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    
+
     // Convert tags string to array
     const tagsArray = formData.tags
-      .split(',')
-      .map(tag => tag.trim())
-      .filter(tag => tag);
-    
+      .split(",")
+      .map((tag) => tag.trim())
+      .filter((tag) => tag);
+
     const todoData = {
       ...formData,
-      tags: tagsArray
+      tags: tagsArray,
     };
-    
+
     if (todo) {
       updateTodo(todo._id, todoData);
     } else {
       addTodo(todoData);
     }
-    
+
     onClose();
   };
 
@@ -83,10 +85,12 @@ const AddTodoModal = ({ todo = null, onClose }) => {
     <div className={styles.modalOverlay} onClick={handleClickOutside}>
       <div className={styles.modal}>
         <div className={styles.modalHeader}>
-          <h2>{todo ? 'Edit Todo' : 'Add New Todo'}</h2>
-          <button className={styles.closeButton} onClick={onClose}>×</button>
+          <h2>{todo ? "View/Edit Todo" : "Add New Todo"}</h2>
+          <button className={styles.closeButton} onClick={onClose}>
+            ×
+          </button>
         </div>
-        
+
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="title">Title</label>
@@ -100,7 +104,7 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               className={styles.input}
             />
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="description">Description</label>
             <textarea
@@ -111,7 +115,7 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               className={styles.textarea}
             />
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="priority">Priority</label>
             <select
@@ -126,7 +130,7 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               <option value="Low">Low</option>
             </select>
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="tags">Tags (comma separated)</label>
             <input
@@ -139,7 +143,7 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               className={styles.input}
             />
           </div>
-          
+
           <div className={styles.formGroup}>
             <label htmlFor="status">Status</label>
             <select
@@ -153,16 +157,18 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               <option value="completed">Completed</option>
             </select>
           </div>
-          
+
           {users && users.length > 0 && (
             <div className={styles.formGroup}>
               <label>Mention Users</label>
               <div className={styles.userGrid}>
-                {users.map(user => (
-                  <div 
-                    key={user._id} 
+                {users.map((user) => (
+                  <div
+                    key={user._id}
                     className={`${styles.userCard} ${
-                      formData.mentionedUsernames.includes(user.username) ? styles.selectedUser : ''
+                      formData.mentionedUsernames.includes(user.username)
+                        ? styles.selectedUser
+                        : ""
                     }`}
                     onClick={() => handleUserSelection(user.username)}
                   >
@@ -175,13 +181,17 @@ const AddTodoModal = ({ todo = null, onClose }) => {
               </div>
             </div>
           )}
-          
+
           <div className={styles.formActions}>
-            <button type="button" className={styles.cancelButton} onClick={onClose}>
+            <button
+              type="button"
+              className={styles.cancelButton}
+              onClick={onClose}
+            >
               Cancel
             </button>
             <button type="submit" className={styles.submitButton}>
-              {todo ? 'Update' : 'Create'} Todo
+              {todo ? "Update" : "Create"} Todo
             </button>
           </div>
         </form>
