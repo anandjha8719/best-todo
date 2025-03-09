@@ -4,8 +4,6 @@ import {
   FaEdit,
   FaTrash,
   FaStickyNote,
-  FaChevronLeft,
-  FaChevronRight,
   FaEye,
 } from "react-icons/fa";
 import { useState } from "react";
@@ -17,15 +15,14 @@ import styles from "./TodoContent.module.css";
 
 const TodoContent = () => {
   const {
-    todos: data,
+    todos,
+    loading,
+    hasMore,
+    loadMoreTodos,
     deleteTodo,
     updateFilters,
     filters,
     updateTodo,
-    nextPage,
-    prevPage,
-    currentPage,
-    totalPages,
   } = useTodo();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -34,7 +31,7 @@ const TodoContent = () => {
   const [activeNoteId, setActiveNoteId] = useState(null);
 
   const handleAddNewClick = () => {
-    setSelectedTodo(null); // Reset selected todo when adding a new one
+    setSelectedTodo(null);
     setIsModalOpen(true);
   };
 
@@ -64,7 +61,6 @@ const TodoContent = () => {
   };
 
   const handleNoteButtonClick = (id) => {
-    // Toggle note form visibility
     setActiveNoteId(activeNoteId === id ? null : id);
   };
 
@@ -74,6 +70,11 @@ const TodoContent = () => {
 
   const closeNoteAdd = () => {
     setActiveNoteId(null);
+  };
+
+  const handleSearch = (e) => {
+    const searchValue = e.target.value;
+    updateFilters({ search: searchValue });
   };
 
   const getPriorityClass = (priority) => {
@@ -102,19 +103,19 @@ const TodoContent = () => {
             placeholder="Search todos..."
             className={styles.searchInput}
             value={filters.search}
-            onChange={(e) => updateFilters({ search: e.target.value })}
+            onChange={handleSearch}
           />
           <FaSearch className={styles.searchIcon} />
         </div>
       </div>
 
       <div className={styles.todoList}>
-        {data.length === 0 ? (
+        {todos.length === 0 && !loading ? (
           <div className={styles.noTodos}>
             No todos found. Add a new todo to get started!
           </div>
         ) : (
-          data.map((item) => (
+          todos.map((item) => (
             <div
               className={`${styles.todoItem} ${
                 item.status === "completed" ? styles.todoCompleted : ""
@@ -202,37 +203,29 @@ const TodoContent = () => {
                 </div>
               </div>
 
-              {/* Note Form - Conditionally rendered */}
               {activeNoteId === item._id && (
                 <TodoNoteAdd todoId={item._id} onClose={closeNoteAdd} />
               )}
 
-              {/* Display existing notes */}
               <TodoNotes notes={item.notes} />
             </div>
           ))
         )}
       </div>
 
-      <div className={styles.paginationControls}>
-        <button
-          className={styles.paginationButton}
-          disabled={currentPage <= 1}
-          onClick={prevPage}
-        >
-          <FaChevronLeft /> Previous
-        </button>
-        <div className={styles.paginationPages}>
-          <span>{currentPage}</span> / <span>{totalPages || 1}</span>
+      {todos.length > 0 && (
+        <div className={styles.loadMoreContainer}>
+          {loading ? (
+            <div className={styles.loading}>Loading...</div>
+          ) : (
+            hasMore && (
+              <button className={styles.loadMoreButton} onClick={loadMoreTodos}>
+                Load More
+              </button>
+            )
+          )}
         </div>
-        <button
-          className={styles.paginationButton}
-          disabled={currentPage >= totalPages}
-          onClick={nextPage}
-        >
-          Next <FaChevronRight />
-        </button>
-      </div>
+      )}
 
       {isModalOpen && <AddTodoModal todo={selectedTodo} onClose={closeModal} />}
     </section>

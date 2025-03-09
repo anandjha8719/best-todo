@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-
 const todoSchema = new mongoose.Schema({
   title: {
     type: String,
@@ -53,7 +52,12 @@ const todoSchema = new mongoose.Schema({
   },
 });
 
-// Update the updatedAt timestamp before saving
+todoSchema.index({ creator: 1, createdAt: -1 });
+todoSchema.index({ creator: 1, status: 1 });
+todoSchema.index({ creator: 1, priority: 1 });
+todoSchema.index({ creator: 1, tags: 1 });
+todoSchema.index({ creator: 1, title: "text", description: "text" });
+
 todoSchema.pre("save", function (next) {
   this.updatedAt = Date.now();
   next();

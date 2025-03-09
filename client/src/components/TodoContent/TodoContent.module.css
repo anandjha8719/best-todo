@@ -1,20 +1,3 @@
-/* TodoContent.module.css */
-:root {
-  --primary-color: #4a6eb5;
-  --primary-light: #6688cc;
-  --primary-dark: #334d80;
-  --secondary-color: #6c757d;
-  --light-gray: #f8f9fa;
-  --medium-gray: #e9ecef;
-  --dark-gray: #343a40;
-  --danger-color: #dc3545;
-  --success-color: #28a745;
-  --warning-color: #ffc107;
-  --border-radius: 4px;
-  --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-  --transition: all 0.3s ease;
-}
-
 .todoContent {
   flex: 1;
   display: flex;
@@ -22,7 +5,6 @@
   gap: 1.5rem;
 }
 
-/* Todo Actions */
 .todoActions {
   display: flex;
   justify-content: space-between;
@@ -169,8 +151,6 @@
   border: none;
   color: var(--secondary-color);
   cursor: pointer;
-  /* width: 30px;
-  height: 30px; */
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -253,44 +233,6 @@
   font-size: 0.75rem;
 }
 
-/* Pagination */
-.paginationControls {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem;
-  background-color: white;
-  border-radius: var(--border-radius);
-  box-shadow: var(--box-shadow);
-}
-
-.paginationButton {
-  background: none;
-  border: none;
-  color: var(--primary-color);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem;
-  border-radius: var(--border-radius);
-  transition: var(--transition);
-}
-
-.paginationButton:hover:not(:disabled) {
-  background-color: var(--light-gray);
-}
-
-.paginationButton:disabled {
-  color: var(--secondary-color);
-  cursor: not-allowed;
-}
-
-.paginationPages {
-  font-weight: 500;
-}
-
-/* Responsive Styles */
 @media (max-width: 768px) {
   .todoActions {
     flex-direction: column;
@@ -316,4 +258,30 @@
     align-items: flex-start;
     padding-left: 0;
   }
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  margin: 20px 0;
+}
+
+.loadMoreButton {
+  padding: 10px 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.loadMoreButton:hover {
+  background-color: #e0e0e0;
+}
+
+.loading {
+  padding: 10px;
+  text-align: center;
+  color: #666;
 }

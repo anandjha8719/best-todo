@@ -13,7 +13,7 @@ export const TodoContext = createContext();
 export const TodoProvider = ({ children }) => {
   const { currentUser } = useUser();
   const [todos, setTodos] = useState([]);
-  const [filteredTodos, setFilteredTodos] = useState([]);
+  const [availableTags, setAvailableTags] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [filters, setFilters] = useState({
@@ -21,39 +21,58 @@ export const TodoProvider = ({ children }) => {
     tags: [],
     search: "",
     status: "",
-    page: 1,
     limit: 10,
+    cursor: null,
   });
+  const [hasMore, setHasMore] = useState(false);
 
   useEffect(() => {
     if (currentUser) {
       loadTodos();
     }
-  }, [currentUser, filters.page, filters.limit]);
+  }, [
+    currentUser,
+    filters.status,
+    filters.search,
+    filters.priority,
+    filters.tags,
+  ]);
 
-  // Apply filters when todos or filters change
-  useEffect(() => {
-    applyFilters();
-  }, [todos, filters.priority, filters.tags, filters.search, filters.status]);
-
-  const loadTodos = async () => {
+  const loadTodos = async (refreshData = true) => {
     if (!currentUser) return;
 
     setLoading(true);
     setError(null);
 
     try {
-      // Build query params
-      const queryParams = new URLSearchParams({
-        page: filters.page,
+      // all necessery params
+      const params = {
         limit: filters.limit,
+        cursor: refreshData ? null : filters.cursor, // Don't use cursor if refreshing data
+        status: filters.status,
+        priority: filters.priority.length > 0 ? filters.priority : undefined,
+        tags: filters.tags.length > 0 ? filters.tags : undefined,
+        search: filters.search,
         user: currentUser.username,
-      });
+      };
 
-      if (filters.status) queryParams.append("status", filters.status);
+      const response = await fetchTodos(params);
 
-      const data = await fetchTodos(queryParams);
-      setTodos(data.data);
+      if (refreshData) {
+        setTodos(response.data);
+      } else {
+        setTodos((prevTodos) => [...prevTodos, ...response.data]);
+      }
+
+      setHasMore(response.hasMore);
+      setFilters((prev) => ({
+        ...prev,
+        cursor: response.nextCursor,
+      }));
+
+      if (response.availableTags) {
+        setAvailableTags(response.availableTags);
+      }
     } catch (err) {
       setError("Failed to load todos. Please try again later.");
       console.error("Error loading todos:", err);
@@ -62,41 +81,10 @@ export const TodoProvider = ({ children }) => {
     }
   };
 
-  const applyFilters = () => {
-    let filtered = [...todos];
-
-    // Apply priority filter
-    if (filters.priority.length > 0) {
-      filtered = filtered.filter((todo) =>
-        filters.priority.includes(todo.priority)
-      );
+  const loadMoreTodos = () => {
+    if (hasMore && !loading) {
+      loadTodos(false);
     }
-
-    // Apply tags filter
-    if (filters.tags.length > 0) {
-      filtered = filtered.filter(
-        (todo) =>
-          todo.tags && todo.tags.some((tag) => filters.tags.includes(tag))
-      );
-    }
-
-    // Apply search filter
-    if (filters.search) {
-      const searchTerm = filters.search.toLowerCase();
-      filtered = filtered.filter(
-        (todo) =>
-          todo.title.toLowerCase().includes(searchTerm) ||
-          (todo.description &&
-            todo.description.toLowerCase().includes(searchTerm))
-      );
-    }
-
-    // Apply status filter
-    if (filters.status) {
-      filtered = filtered.filter((todo) => todo.status === filters.status);
-    }
-
-    setFilteredTodos(filtered);
   };
 
   const addTodo = async (todoData) => {
@@ -106,14 +94,12 @@ export const TodoProvider = ({ children }) => {
     setError(null);
 
     try {
-      // Add user to the request
-      console.log("todo before add:", todos);
       const newTodo = await createTodo({
         ...todoData,
         user: currentUser.username,
       });
 
-      setTodos((prevTodos) => [newTodo, ...prevTodos]);
+      loadTodos();
       return newTodo;
     } catch (err) {
       setError("Failed to add todo. Please try again.");
@@ -131,16 +117,13 @@ export const TodoProvider = ({ children }) => {
     setError(null);
 
     try {
-      // Include user in query parameters
       const updatedTodo = await updateTodoById(
         id,
         todoData,
         currentUser.username
       );
 
-      setTodos((prevTodos) =>
-        prevTodos.map((todo) => (todo._id === id ? updatedTodo : todo))
-      );
+      loadTodos();
       return updatedTodo;
     } catch (err) {
       setError("Failed to update todo. Please try again.");
@@ -158,10 +141,9 @@ export const TodoProvider = ({ children }) => {
     setError(null);
 
     try {
-      // Include user in query parameters
       await deleteTodoById(id, currentUser.username);
 
-      setTodos((prevTodos) => prevTodos.filter((todo) => todo._id !== id));
+      loadTodos();
       return true;
     } catch (err) {
       setError("Failed to delete todo. Please try again.");
@@ -179,7 +161,6 @@ export const TodoProvider = ({ children }) => {
     setError(null);
 
     try {
-      // Include user in query parameters
       const updatedTodo = await addNoteToTodo(
         todoId,
         { content: noteContent },
@@ -196,51 +177,30 @@ export const TodoProvider = ({ children }) => {
     }
   };
 
-  const exportTodos = async (format = "json") => {
-    if (!currentUser) return;
-
-    try {
-      // Implementation for export will depend on how your API works
-      // For now, we'll just return a placeholder
-      return `Exporting todos in ${format} format for user ${currentUser.username}`;
-    } catch (err) {
-      console.error("Error exporting todos:", err);
-      return null;
-    }
-  };
-
   const updateFilters = (newFilters) => {
-    setFilters((prev) => ({ ...prev, ...newFilters }));
-  };
-
-  const nextPage = () => {
-    setFilters((prev) => ({ ...prev, page: prev.page + 1 }));
-  };
-
-  const prevPage = () => {
-    if (filters.page > 1) {
-      setFilters((prev) => ({ ...prev, page: prev.page - 1 }));
-    }
+    setFilters((prev) => ({
+      ...prev,
+      ...newFilters,
+      cursor: null,
+    }));
   };
 
   return (
     <TodoContext.Provider
       value={{
-        todos: filteredTodos,
+        todos,
+        availableTags,
         loading,
         error,
         filters,
-        totalPages: Math.ceil(todos.length / filters.limit),
-        currentPage: filters.page,
+        hasMore,
         addTodo,
         updateTodo,
         deleteTodo,
         addNote,
-        exportTodos,
         updateFilters,
-        nextPage,
-        prevPage,
-        refreshTodos: loadTodos,
+        loadMoreTodos,
+        refreshTodos: () => loadTodos(true),
       }}
     >
       {children}

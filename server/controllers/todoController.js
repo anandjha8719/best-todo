@@ -63,48 +63,112 @@ const createTodo = async (req, res) => {
 const getAllTodos = async (req, res) => {
   try {
     const {
-      page = 1,
       limit = 10,
+      cursor,
       status,
       priority,
-      tag,
+      tags,
+      search,
       sort = "createdAt",
       order = "desc",
     } = req.query;
 
+    // primary filter - always filter by current user
     const filter = { creator: req.user._id };
 
+    // status filter if any
     if (status) filter.status = status;
-    if (priority) filter.priority = priority;
-    if (tag) filter.tags = tag;
 
-    const skip = (parseInt(page) - 1) * parseInt(limit);
+    //  priority filter if any
+    if (priority) {
+      const priorityList = Array.isArray(priority) ? priority : [priority];
+      filter.priority = { $in: priorityList };
+    }
 
+    // tags filter if there is
+    if (tags) {
+      const tagsList = Array.isArray(tags) ? tags : [tags];
+      filter.tags = { $in: tagsList };
+    }
+
+    // text search
+    if (search && search.trim() !== "") {
+      // Using regular expression for case-insensitive partial matching
+      const searchRegex = new RegExp(search, "i");
+      filter.$or = [{ title: searchRegex }, { description: searchRegex }];
+    }
+
+    // sorting - default: createdAt in desc
     const sortOption = {};
     sortOption[sort] = order === "asc" ? 1 : -1;
 
+    // apply cursor-based pagignation if provided
+    if (cursor) {
+      try {
+        const decodedCursor = JSON.parse(
+          Buffer.from(cursor, "base64").toString("utf-8")
+        );
+        const cursorField = Object.keys(sortOption)[0];
+        const cursorValue = decodedCursor[cursorField];
+        const cursorId = decodedCursor._id;
+
+        if (cursorValue && cursorId) {
+          if (order === "desc") {
+            filter[cursorField] = { $lt: cursorValue };
+          } else {
+            filter[cursorField] = { $gt: cursorValue };
+          }
+          // handle ties in the sort field
+          filter._id = { $ne: cursorId };
+        }
+      } catch (e) {
+        console.error("Some error in cursor:", e);
+      }
+    }
+
+    // run the query with **** limit + 1 **** to find if there are more results
     const todos = await Todo.find(filter)
       .populate("creator", "username")
       .populate("mentionedUsers", "username")
       .sort(sortOption)
-      .skip(skip)
-      .limit(parseInt(limit));
+      .limit(parseInt(limit) + 1);
 
-    const totalTodos = await Todo.countDocuments(filter);
+    const hasMore = todos.length > parseInt(limit);
+
+    const results = hasMore ? todos.slice(0, parseInt(limit)) : todos;
+
+    // generae next cursor in case of more result
+    let nextCursor = null;
+    if (hasMore && results.length > 0) {
+      const lastItem = results[results.length - 1];
+      const cursorData = {
+        _id: lastItem._id.toString(),
+        [sort]: lastItem[sort],
+      };
+      nextCursor = Buffer.from(JSON.stringify(cursorData)).toString("base64");
+    }
+
+    // unique tags from all todos accprding to current filter (except tags filter itself!!!!! to get all possible tags)
+    const tagsFilter = { ...filter };
+    delete tagsFilter.tags;
+
+    const allTodos = await Todo.find(tagsFilter).select("tags");
+    const uniqueTags = [
+      ...new Set(allTodos.flatMap((todo) => todo.tags || [])),
+    ];
 
     res.status(200).json({
       success: true,
-      count: todos.length,
-      total: totalTodos,
-      totalPages: Math.ceil(totalTodos / parseInt(limit)),
-      currentPage: parseInt(page),
-      data: todos,
+      count: results.length,
+      hasMore,
+      nextCursor,
+      availableTags: uniqueTags,
+      data: results,
     });
   } catch (error) {
     handleError(res, error, "Error retrieving todos");
   }
 };
-
 /**
  * get todo by id
  */

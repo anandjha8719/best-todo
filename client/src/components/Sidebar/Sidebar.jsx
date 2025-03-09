@@ -1,22 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useTodo } from "../../contexts/todoContext";
 import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
-  const { todos, updateFilters, filters } = useTodo();
-  const [availableTags, setAvailableTags] = useState([]);
-
-  useEffect(() => {
-    if (todos.length > 0) {
-      const tagsSet = new Set();
-      todos.forEach((todo) => {
-        if (todo.tags && Array.isArray(todo.tags)) {
-          todo.tags.forEach((tag) => tagsSet.add(tag));
-        }
-      });
-      setAvailableTags(Array.from(tagsSet));
-    }
-  }, [todos]);
+  const { availableTags, updateFilters, filters } = useTodo();
 
   const handlePriorityFilter = (e) => {
     const { value, checked } = e.target;
@@ -43,10 +30,50 @@ const Sidebar = () => {
     updateFilters({ tags: newTags });
   };
 
+  const handleStatusFilter = (e) => {
+    const { value } = e.target;
+    updateFilters({ status: value });
+  };
+
   return (
     <aside className={styles.sidebar}>
       <div className={styles.filterSection}>
         <h3>Filters</h3>
+        <div className={styles.filterGroup}>
+          <h4>Status</h4>
+          <div className={styles.filterOptions}>
+            <label>
+              <input
+                type="radio"
+                name="status"
+                value=""
+                checked={filters.status === ""}
+                onChange={handleStatusFilter}
+              />{" "}
+              All
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="status"
+                value="pending"
+                checked={filters.status === "pending"}
+                onChange={handleStatusFilter}
+              />{" "}
+              Pending
+            </label>
+            <label>
+              <input
+                type="radio"
+                name="status"
+                value="completed"
+                checked={filters.status === "completed"}
+                onChange={handleStatusFilter}
+              />{" "}
+              Completed
+            </label>
+          </div>
+        </div>
         <div className={styles.filterGroup}>
           <h4>Priority</h4>
           <div className={styles.filterOptions}>
