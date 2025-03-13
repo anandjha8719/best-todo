@@ -1,5 +1,6 @@
 import React from "react";
 import { useTodo } from "../../contexts/todoContext";
+import TagSearch from "../TagSearch/TagSearch"; // send all details via prop only for UX, all state updates still here in parent/sidebar
 import styles from "./Sidebar.module.css";
 
 const Sidebar = () => {
@@ -108,27 +109,11 @@ const Sidebar = () => {
         </div>
         <div className={styles.filterGroup}>
           <h4>Tags</h4>
-          <div className={`${styles.filterOptions} ${styles.tagsFilter}`}>
-            {availableTags.length > 0 ? (
-              availableTags.map((tag) => (
-                <div
-                  key={tag}
-                  className={`${styles.tag} ${
-                    filters.tags.includes(tag) ? styles.tagSelected : ""
-                  }`}
-                  onClick={() => handleTagFilter(tag)}
-                >
-                  {tag}
-                </div>
-              ))
-            ) : (
-              <>
-                <div className={styles.tagPlaceholder}></div>
-                <div className={styles.tagPlaceholder}></div>
-                <div className={styles.tagPlaceholder}></div>
-              </>
-            )}
-          </div>
+          <TagSearch
+            availableTags={availableTags}
+            selectedTags={filters.tags}
+            onTagSelect={handleTagFilter}
+          />
         </div>
       </div>
     </aside>
