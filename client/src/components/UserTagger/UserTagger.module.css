@@ -1,0 +1,101 @@
+.userTaggerContainer {
+  margin-bottom: 20px;
+}
+
+.taggerLabel {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: 500;
+  color: #333;
+}
+
+.userSearchContainer {
+  margin-bottom: 10px;
+  position: relative;
+}
+
+.userSearchInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 14px;
+  transition: border-color 0.3s;
+}
+
+.userSearchInput:focus {
+  border-color: #007bff;
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.selectionInfo {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
+  font-style: italic;
+}
+
+.noUsersFound {
+  background-color: #fff3f3;
+  border: 1px solid #ffcfcf;
+  color: #d9534f;
+  padding: 8px 12px;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  font-size: 14px;
+  text-align: center;
+}
+
+.userGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  gap: 10px;
+  margin-top: 10px;
+  max-height: 200px;
+  overflow-y: auto;
+  padding-right: 5px;
+}
+
+.userCard {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.userCard:hover {
+  border-color: #007bff;
+  background-color: #f8f9fa;
+}
+
+.selectedUser {
+  background-color: #e7f3ff;
+  border-color: #007bff;
+}
+
+.userAvatar {
+  width: 36px;
+  height: 36px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  margin-bottom: 6px;
+}
+
+.userName {
+  font-size: 12px;
+  text-align: center;
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

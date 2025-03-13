@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import styles from "./TodoModal.module.css";
 import { useTodo } from "../../contexts/todoContext";
 import { useUser } from "../../contexts/userContext";
+import UserTagger from "../UserTagger/UserTagger"; // Import the new component
 
 const AddTodoModal = ({ todo = null, onClose }) => {
   const { addTodo, updateTodo } = useTodo();
@@ -37,19 +38,12 @@ const AddTodoModal = ({ todo = null, onClose }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleUserSelection = (username) => {
-    setFormData((prev) => {
-      const isSelected = prev.mentionedUsernames.includes(username);
-      let newUsers;
-
-      if (isSelected) {
-        newUsers = prev.mentionedUsernames.filter((u) => u !== username);
-      } else {
-        newUsers = [...prev.mentionedUsernames, username];
-      }
-
-      return { ...prev, mentionedUsernames: newUsers };
-    });
+  // Handler for when selected users change in the UserTagger component
+  const handleUserSelectionChange = (selectedUsers) => {
+    setFormData((prev) => ({
+      ...prev,
+      mentionedUsernames: selectedUsers,
+    }));
   };
 
   const handleSubmit = (e) => {
@@ -158,29 +152,13 @@ const AddTodoModal = ({ todo = null, onClose }) => {
             </select>
           </div>
 
-          {users && users.length > 0 && (
-            <div className={styles.formGroup}>
-              <label>Mention Users</label>
-              <div className={styles.userGrid}>
-                {users.map((user) => (
-                  <div
-                    key={user._id}
-                    className={`${styles.userCard} ${
-                      formData.mentionedUsernames.includes(user.username)
-                        ? styles.selectedUser
-                        : ""
-                    }`}
-                    onClick={() => handleUserSelection(user.username)}
-                  >
-                    <div className={styles.userAvatar}>
-                      {user.username.charAt(0).toUpperCase()}
-                    </div>
-                    <div className={styles.userName}>{user.username}</div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          )}
+          <div className={styles.formGroup}>
+            <UserTagger
+              users={users}
+              selectedUsernames={formData.mentionedUsernames}
+              onChange={handleUserSelectionChange}
+            />
+          </div>
 
           <div className={styles.formActions}>
             <button
