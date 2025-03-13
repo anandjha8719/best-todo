@@ -6,6 +6,7 @@ import {
   updateTodoById,
   deleteTodoById,
   addNoteToTodo,
+  editNoteInTodo,
 } from "../api/todoApi";
 
 export const TodoContext = createContext();
@@ -176,7 +177,28 @@ export const TodoProvider = ({ children }) => {
       setLoading(false);
     }
   };
-
+  const editNote = async (todoId, noteIndex, noteContent) => {
+    if (!currentUser) return;
+  
+    setLoading(true);
+    setError(null);
+  
+    try {
+      const updatedTodo = await editNoteInTodo(
+        todoId,
+        { noteIndex, content: noteContent },
+        currentUser.username
+      );
+      loadTodos();
+      return updatedTodo;
+    } catch (err) {
+      setError("Failed to edit note. Please try again.");
+      console.error("Error editing note:", err);
+      return null;
+    } finally {
+      setLoading(false);
+    }
+  };
   const updateFilters = (newFilters) => {
     setFilters((prev) => ({
       ...prev,
@@ -198,6 +220,7 @@ export const TodoProvider = ({ children }) => {
         updateTodo,
         deleteTodo,
         addNote,
+        editNote,
         updateFilters,
         loadMoreTodos,
         refreshTodos: () => loadTodos(true),

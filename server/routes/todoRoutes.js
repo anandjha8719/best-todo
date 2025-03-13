@@ -8,6 +8,7 @@ const {
   deleteTodo,
   addNoteToTodo,
   exportTodos,
+  editNoteInTodo,
 } = require("../controllers/todoController");
 const authMiddleware = require("../middlewares/authMiddleware");
 
@@ -23,5 +24,6 @@ router.delete("/:id", deleteTodo);
 
 //note
 router.post("/:id/notes", addNoteToTodo);
+router.put("/:id/notes", editNoteInTodo);
 
 module.exports = router;

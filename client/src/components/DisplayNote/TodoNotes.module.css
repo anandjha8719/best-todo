@@ -41,3 +41,39 @@
 .item:last-child {
   border-bottom: none;
 }
+
+.noteContent {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.noteContent span {
+  flex-grow: 1;
+  margin-right: 10px;
+  word-break: break-word;
+}
+
+.editNoteButton {
+  background: none;
+  border: none;
+  color: #666;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.5;
+  transition: opacity 0.2s, color 0.2s;
+}
+
+.editNoteButton:hover {
+  opacity: 1;
+  color: #007bff;
+}
+
+.item {
+  position: relative;
+}

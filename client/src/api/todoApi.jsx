@@ -118,6 +118,20 @@ export const addNoteToTodo = async (todoId, noteData, username) => {
   }
 };
 
+// edit note api call
+export const editNoteInTodo = async (todoId, noteData, username) => {
+  try {
+    const response = await apiClient.put(
+      `/todos/${todoId}/notes?user=${username}`,
+      noteData
+    );
+    return response.data;
+  } catch (error) {
+    console.error("API Error - Edit Note:", error);
+    throw error;
+  }
+};
+
 // Export todos //TODO:
 export const exportTodos = async (format = "json", username) => {
   try {

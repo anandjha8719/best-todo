@@ -207,7 +207,7 @@ const TodoContent = () => {
                 <TodoNoteAdd todoId={item._id} onClose={closeNoteAdd} />
               )}
 
-              <TodoNotes notes={item.notes} />
+              <TodoNotes notes={item.notes} todoId={item._id} />
             </div>
           ))
         )}

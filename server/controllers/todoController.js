@@ -343,6 +343,61 @@ const addNoteToTodo = async (req, res) => {
     handleError(res, error, "Error adding note to todo");
   }
 };
+/**
+ * edit a note in a todo
+ */
+const editNoteInTodo = async (req, res) => {
+  try {
+    const todoId = req.params.id;
+    const { noteIndex, content } = req.body;
+
+    if (noteIndex === undefined || !content) {
+      return res.status(400).json({
+        success: false,
+        message: "Note index and content are required",
+      });
+    }
+
+    const todo = await Todo.findById(todoId);
+
+    if (!todo) {
+      return res.status(404).json({
+        success: false,
+        message: "Todo not found",
+      });
+    }
+
+    if (todo.creator.toString() !== req.user._id.toString()) {
+      return res.status(403).json({
+        success: false,
+        message: "Access denied. This todo belongs to another user",
+      });
+    }
+
+    // Check if the note at the specified index exists
+    if (!todo.notes[noteIndex]) {
+      return res.status(404).json({
+        success: false,
+        message: "Note not found",
+      });
+    }
+
+    // Update the note at the specified index
+    todo.notes[noteIndex] = content;
+    todo.updatedAt = Date.now();
+
+    const updatedTodo = await todo.save();
+
+    res.status(200).json({
+      success: true,
+      message: "Note updated successfully",
+      data: updatedTodo,
+    });
+  } catch (error) {
+    handleError(res, error, "Error editing note in todo");
+  }
+};
+
 
 /**
  * Export all todos for the current user
@@ -409,5 +464,6 @@ module.exports = {
   updateTodo,
   deleteTodo,
   addNoteToTodo,
+  editNoteInTodo,
   exportTodos,
 };
